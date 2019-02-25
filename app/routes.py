@@ -1,3 +1,4 @@
+from flask import render_template
 from app import app
 
 @app.route("/")
@@ -10,4 +11,7 @@ def home():
 
 @app.route("/research")
 def research():
-    return("Here's some of my latest research:")
+    title = "Research"
+    heading = "Lates Publications will be Listed Below"
+    pubs = ["High Process Computing","NLP","Network Analysis"]
+    return render_template('research.html', title=title, heading = heading, pubs = pubs)
