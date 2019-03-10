@@ -2,16 +2,22 @@ from flask import render_template
 from app import app
 
 @app.route("/")
-def hello():
-    return("Hello World!")
-
 @app.route("/home")
 def home():
-    return("Welcome home!")
+    return("Hello, World! Welcome home.")
 
-@app.route("/research")
-def research():
-    title = "Research"
-    heading = "Lates Publications will be Listed Below"
-    pubs = ["High Process Computing","NLP","Network Analysis"]
-    return render_template('research.html', title=title, heading = heading, pubs = pubs)
+@app.route("/workshop")
+def workshop():
+    pubs = [{"title":"NLP", "link":"https://github.com/epmarie/IntroNLP"},
+            {"title":"Network Analysis", "link":"https://github.com/epmarie/network_workshop"},
+            {"title":"Flask", "link":"https://github.com/epmarie/flask_example_app"}]
+    data = {"title": "Workshops", "heading": "Latest Workshops", "pubs":pubs}
+    return render_template('workshop.html', data=data)
+
+# todo:
+# add url param display bokeh chart
+# graphic / page for python anywhere
+# make PA account
+# cut github part
+# template inheritance & linking
+# updating site once deployed

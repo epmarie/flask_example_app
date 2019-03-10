@@ -12,11 +12,9 @@ $ mkdir my_app
 $ cd my_app
 $ mkdir app
 ```
-Optionally, connect your application to a GitHub repository. This is not requried, but __strongly__ recommended. It's good to get in the habit of backing up your work, and storing your code on GitHub will make deploying your app easier if you decide to choose a different host. Then, add your first two python files using the `touch` command (if using GitHub, add a few other files, too).
+Next, add your first two python files using the `touch` command.
 
 ```
-$ git init
-$ touch routes.py .gitignore README.md requirements.txt
 $ cd app
 $ touch __init__.py routes.py
 ```
@@ -33,21 +31,28 @@ We have a few more steps before our package is ready to go - open `routes.py`. T
 from app import app
 
 @app.route("/")
-@app.route("/index")
+@app.route("/home")
 def hello():
-    return("Hello World!")
+    return("Hello World! Welcome home.")
 ```
 Okay, the basics of our package are set! Now, back to our actual _application_. Set your working directory back to `my_app` and create another python file:
 ```
 $ cd ..
-$ touch my_app.py
+$ touch flask_app.py
 ```
-Open that new file, add `from app import app`, and ta-da: your app is ready to go! Jump back over to your terminal and run `export FLASK_APP=my_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
+Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `FLASK_ENV=development`. Now, jump back over to your terminal and run `export FLASK_APP=my_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
 ```
- * Serving Flask app "app" (lazy loading)
+[* Serving Flask app "app" (lazy loading)
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)]( * Serving Flask app "flask_app.py" (lazy loading)
+ * Environment: development
+ * Debug mode: on
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 267-280-087
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+)
 ```
-In your web browser, navigate to <http://localhost:5000/>. You should see a white page with "Hello World!" in black text in the top right corner.
+In your web browser, navigate to <http://localhost:5000/>. You should see a white page with "Hello World! Welcome home." in black text in the top right corner.
 #### Check Point
 Before continuing, make sure that your directory has the following structure:
 ```
@@ -55,48 +60,48 @@ my_app/
     .gitignore
     README.md
     requirements.txt
-    my_app.py
+    flask_app.py
     app/
         __init__.py
         routes.py
 ```
-You may also see `__pycache__` in your folder - don't worry about this. If using GitHub, this is a good time to push your updates.
+You may also see `__pycache__` in your folder - don't worry about this.
 
 ## Routes & Pages
 In our code, notice the use of `@app.route("/"):` before our function definition. This is our way of telling the program to run the function we defined below when our URL is followed by just a forward slash. In other words, this is how we define __routes__ to access different __pages__. To see how this works, let's create a few sample routes. Take a few minutes and add two more routes, each with a function returning text. Then, re-run your application and navigate to those new routes!
 
-Now that you have an idea of how routes work, we'll build some together. Initially, we just returned text for our routes. You can also return HTML, which we'll try here. Add a "reasearch" route to your `routes.py` file with the following function definition:
+Now that you have an idea of how routes work, we'll build some together. Initially, we just returned text for our routes. You can also return HTML, which we'll try here. Add a "workshop" route to your `routes.py` file with the following function definition:
 ```
-@app.route("/research")
-def research():
+@app.route("/workshop")
+def workshop():
     return '''
 <html>
     <head>
-        <title>Research Page - My App</title>
+        <title>Workshops Page - My App</title>
     </head>
     <body>
-        <h1>Latest Publications will be Listed Below</h1>
+        <h1>Latest Workshops will be Listed Below</h1>
     </body>
 </html>'''
 ```
 
-Run `flask run` again and navigate to <localhost:5000/research>. You should see the heading we just wrote.
+Run `flask run` again and navigate to <http://localhost:5000/workshop>. You should see the heading we just wrote.
 
 ## Templates
 #### Basic Templating 
 
-Now, let's say we had a list of publications that we wanted to display on our site, and that we had that list stored as a Python dictionary. We'd probably design our page like so:
+Now, let's say we had a list of Workshops that we wanted to display on our site, and that we had that list stored as a Python dictionary. We'd probably design our page like so:
 ```
-@app.route("/research")
-def research():
-    pubs = ["High Process Computing","NLP","Network Analysis"]
+@app.route("/workshop")
+def workshop():
+    pubs = ["NLP","Network Analysis", "Flask"]
     return '''
 <html>
     <head>
-        <title>Research Page - My App</title>
+        <title>Workshops Page - My App</title>
     </head>
     <body>
-        <h1>Latest Publications will be Listed Below</h1>
+        <h1>Latest Workshops will be Listed Below</h1>
         <ul>
             <li>''' + pubs[0]+'''</li>
             <li>''' + pubs[1]+'''</li>
@@ -105,23 +110,23 @@ def research():
     </body>
 </html>'''
 ```
-This approach takes constant editing and isn't very user-friendly. Thankfully, Jinja2, a templating tool, links with Flask. This will allow us to create __templates__ for our pages so that they can update easily. We'll start by making a folder for our templates and creating our index template - make sure you're in the `my_app` directory first.
+This approach takes constant editing and isn't very user-friendly. Thankfully, Jinja2, a templating tool, links with Flask. This will allow us to create __templates__ for our pages so that they can update easily. We'll start by making a folder for our templates and creating our home and workshop templates - make sure you're in the `my_app` directory first.
 ```
 $ mkdir app/templates
 $ cd app/templates
-$ touch research.html
+$ touch home.html workshop.html
 ```
-Templates allow us to write HTML and use specific placeholders for certain data. Then, when our template is __rendered__, we pass in the data we want to use and it's automatically formatted exactly how we planned. Place the following code in `research.html`:
+Templates allow us to write HTML and use specific placeholders for certain data. Then, when our template is __rendered__, we pass in the data we want to use and it's automatically formatted exactly how we planned. Place the following code in `workshop.html`:
 ```
 <html>
     <head>
-        <title>{{ title }} - My App </title>
+        <title>{{ data.title }} - My App </title>
     </head>
     <body>
-        <h1>{{ heading }}</h1>
+        <h1>{{ data.heading }}</h1>
         <ul>
-        {% for pub in pubs %}
-            <li>{{pub}}</li>
+        {% for pub in data.pubs %}
+            <li><a href=pub.link>{{ pub.title }}</a></li>
         {% endfor %}
         </ul>
     </body>
@@ -129,14 +134,51 @@ Templates allow us to write HTML and use specific placeholders for certain data.
 ```
 When we want to display an element from our data, we use double braces `{{ }}`. When we want to use logic, we use a brace paired with a percentage sign, `{% %}`.
 
-Now, in order for this template to be rendered when navigating to the research page, we have to edit our `routes.py` file. Be sure to add `from flask import render_template` at the top, and then update your function definition for `research`:
+Now, in order for this template to be rendered when navigating to the workshop page, we have to edit our `routes.py` file. Be sure to add `from flask import render_template` at the top, and then update your function definition for `workshop`:
 ```
-def research():
-    title = "Research"
-    heading = "Latest Publications will be Listed Below"
-    pubs = ["High Process Computing","NLP","Network Analysis"]
-    return render_template('research.html', title=title, heading = heading, pubs = pubs)
+def workshop():
+    pubs = [{"title":"NLP", "link":"https://github.com/epmarie/IntroNLP"},
+            {"title":"Network Analysis", "link":"https://github.com/epmarie/network_workshop"},
+            {"title":"Flask", "link":"https://github.com/epmarie/flask_example_app"}]
+    data = {"title": "workshop", "heading": "Latest Workshops", pubs:pubs}
+    return render_template('workshop.html', data=data)
+)
 ```
-Try re-running your site now - see how each publication is its own element in the list? Jinja took the data we provided and inserted it into the template we created.
+Try re-running your site now - see how each Workshop is its own element in the list? Jinja took the data we provided and inserted it into the template we created.
 
 #### Template Inheritance
+
+Most websites have some sort of navigation bar and/or header at the top of every page. Instead of having to copy and paste the same HTML code into every single route, Jinja allows us to create one file that contains this code that we can add to every other page. Create a new file in the templates folder (either through your editor or through terminal) called `base.html`. Then, place the following code inside it:
+```
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }}</title>
+    {% else %}
+    <title>Welcome to My App</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>My App: <a href="/home">Home</a><a href="/workshop">workshop</a></div>
+    <hr>
+    {% block content %}{% endblock %}
+  </body>
+</html>
+```
+
+Notice the `{% block content %}{% endclock %}` line? This is where the code for each separate page will end up. To fill this, switch back to `workshop.html`, and replace the current code with the code below:
+```
+{% extends "base.html" %}
+{% block content %}
+    <h1>{{ data.heading }}</h1>
+    <ul>
+    {% for pub in data.pubs %}
+        <li><a href="{{ pub.link }}"> {{pub.title}} </a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
+```
+By doing this, we're telling our workshop page to _extend_ our base file. Now, if you reload your workshop page, you should see a header at the top with links to the home page and the workshop page.
+
+### Exercise: Home Page
+Now that you have some of the basics for creating a template and using template inheritance, create a `home.html` page and use it to extend the `base.html` template and show a page header and a quick welcome/description. Hint: remember to change your function in `routes.py`!
