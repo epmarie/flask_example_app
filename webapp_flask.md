@@ -40,7 +40,7 @@ Okay, the basics of our package are set! Now, back to our actual _application_. 
 $ cd ..
 $ touch flask_app.py
 ```
-Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `FLASK_ENV=development`. Now, jump back over to your terminal and run `export FLASK_APP=my_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
+Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `export FLASK_ENV=development`. Now, jump back over to your terminal and run `export FLASK_APP=my_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
 ```
 [* Serving Flask app "app" (lazy loading)
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)]( * Serving Flask app "flask_app.py" (lazy loading)
@@ -57,9 +57,6 @@ In your web browser, navigate to <http://localhost:5000/>. You should see a whit
 Before continuing, make sure that your directory has the following structure:
 ```
 my_app/
-    .gitignore
-    README.md
-    requirements.txt
     flask_app.py
     app/
         __init__.py
@@ -182,3 +179,68 @@ By doing this, we're telling our workshop page to _extend_ our base file. Now, i
 
 ### Exercise: Home Page
 Now that you have some of the basics for creating a template and using template inheritance, create a `home.html` page and use it to extend the `base.html` template and show a page header and a quick welcome/description. Hint: remember to change your function in `routes.py`!
+
+## Adding Interactive Bokeh Graphics
+Since we have our website up and funcitoning, let's take it a step further and add some interactive charts. To keep everything nice and isolated, we'll add a whole new page for this. Start by adding a new route definition:
+```
+@app.route("/vbar", defaults={'days': 13})
+@app.route("/vbar/<int:days>/")
+def graphics(days):
+    # TODO
+    return("Coming soon!")
+```
+
+Before adding the definition, notice the part of the app route that asks for an _int_ value for _days_. This is a parameter passed through the URL to the function. We tell the application that we want an integer value, and we name it _days_ for use in the function. For example, if I wanted 5 days, I would navigate to `localhost:5000/vbar/5`. We set the default number of days to 13, in case someone navigates just to `localhost:5000/vbar`. We'll see how to do this shortly, but first, create a new template called `graphics.html`:
+```
+<link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.13.0.min.css" type="text/css" />
+<link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.13.0.min.css" type="text/css" />
+<script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.13.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-api-0.13.0min.js"></script>
+<script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.13.0.min.js"></script>
+{% extends 'base.html' %}
+{% block content %}
+	<h1>Bokeh VBar Chart using {{ data.days }} Days</h1>
+    {{ data.div|safe }}
+    {{ data.script|safe }}
+{% endblock %}
+```
+Since we're using Bokeh to create the graphics, we need references to the package's javascript and CSS, hence the links at the beginning. Now that we have a template to return, we can update the function definition for our graphics page:
+```
+def graphics(days):
+    days = 13 if days < 1 else days
+    plot = create_bar_chart(days=days)
+    script, div = components(plot)
+    data = {"title":"Graphics", "heading":"Chart", "days":days, "div":div, "script":script}
+    return render_template("graphics.html", data=data)
+```
+Depending on your text editor, you may see errors pop up regarding the `create_bar_chart()` and `components()` functions. Before we can use these functions, we must import them. `Components` comes directly from Bokeh, but `create_bar_chart` is something we (Alex) created. #TODO: download the file, or copy and paste. Who knows?
+
+#### Check point
+Before continuing, make sure that your directory has the following structure:
+```
+my_app/
+    app/
+        templates/
+            base.html
+            graphics.html
+            home.html
+            workshop.html
+        __init__.py
+        routes.py
+    flask_app.py
+    bokeh_vbar.py
+    
+```
+(as before, you may also see `__pycache__` in your folders)
+
+At the top of your `routes.py` file, add the following lines of code just below your `from app import app` line:
+```
+from bokeh.embed import components
+from bokeh_vbar import create_bar_chart
+```
+Run your site and navigate to your new page. Try out a few different integer values (and try _not_ passing in a value) to ensure that your function is acting as intended.
+
+
+## Deploying to Python Anywhere
+
+We've built a web application, learned how to use templates, and added some interactive graphics. Now it's time to deploy! We'll be using Python Anywhere, but there are many options (AWS, Heroku, etc.) to host your site. Navigate to <http://www.pythonanywhere.com/login> to log in (or create an account, if needed).
