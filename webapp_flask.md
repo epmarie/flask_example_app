@@ -240,7 +240,19 @@ from bokeh_vbar import create_bar_chart
 ```
 Run your site and navigate to your new page. Try out a few different integer values (and try _not_ passing in a value) to ensure that your function is acting as intended.
 
+### Exercise
+Add your new page to your base template!
+
 
 ## Deploying to Python Anywhere
 
 We've built a web application, learned how to use templates, and added some interactive graphics. Now it's time to deploy! We'll be using Python Anywhere, but there are many options (AWS, Heroku, etc.) to host your site. Navigate to <http://www.pythonanywhere.com/login> to log in (or create an account, if needed).
+
+On the homepage, navigate to the __Web__ tab and select __"Add a new web app"__. We'll use the Flask setup (and we're running Python 3.6). Once the page loads, scroll down to the __Code__ section and select "Go to directory" for the _working directory_ - we'll come back to edit some of this information later.
+
+Since you can only upload files one at a time (unless you're connecting to something like GitHub), we'll zip our entire folder, upload it, and then unzip it. In your console, make sure you're in the directory _above_ `my_app`, then run `zip -r mysite.zip my_app`. Now, upload that zipped file to PythonAnywhere, and then click "Open Bash Console Here" at the top of the page. In _that_ console, run `unzip mysite.zip` (tedious, I know) and all your files should be stored on PythonAnywhere, in `/home/<username>/my_app`.
+
+Click the geometrical python-esq logo in the top left to return to your dashboard, then navigate to your web app page. Scroll to the __Code__ section once again, and click on the __WSGI configuration file__ link. Change:
+`project_home = u'/home/<username>/mysite'` to `project_home = u'/home/<username>/my_app'` (don't forget to save).
+
+Navigate to your web app page once again, reload your site, and then navigate to the url provided (usually <<username>.pythonanywhere.com>). Ta-da! Your site should be up and running, just as it was locally.
