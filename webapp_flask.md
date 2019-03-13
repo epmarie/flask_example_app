@@ -40,7 +40,7 @@ Okay, the basics of our package are set! Now, back to our actual _application_. 
 $ cd ..
 $ touch flask_app.py
 ```
-Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `export FLASK_ENV=development`. Now, jump back over to your terminal and run `export FLASK_APP=my_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
+Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `export FLASK_ENV=development` (if using windows, use `set` instead of `export`). Now, jump back over to your terminal and run `export FLASK_APP=flask_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
 ```
 [* Serving Flask app "app" (lazy loading)
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)]( * Serving Flask app "flask_app.py" (lazy loading)
@@ -123,7 +123,7 @@ Templates allow us to write HTML and use specific placeholders for certain data.
         <h1>{{ data.heading }}</h1>
         <ul>
         {% for pub in data.pubs %}
-            <li><a href=pub.link>{{ pub.title }}</a></li>
+            <li><a href="{{ pub.link }}">{{ pub.title }}</a></li>
         {% endfor %}
         </ul>
     </body>
@@ -137,7 +137,7 @@ def workshop():
     pubs = [{"title":"NLP", "link":"https://github.com/epmarie/IntroNLP"},
             {"title":"Network Analysis", "link":"https://github.com/epmarie/network_workshop"},
             {"title":"Flask", "link":"https://github.com/epmarie/flask_example_app"}]
-    data = {"title": "workshop", "heading": "Latest Workshops", pubs:pubs}
+    data = {"title": "workshop", "heading": "Latest Workshops", "pubs": pubs}
     return render_template('workshop.html', data=data)
 )
 ```
@@ -156,7 +156,7 @@ Most websites have some sort of navigation bar and/or header at the top of every
     {% endif %}
   </head>
   <body>
-    <div>My App: <a href="/home">Home</a><a href="/workshop">workshop</a></div>
+    <div>My App: <a href="/home">Home</a> <a href="/workshop">workshop</a></div>
     <hr>
     {% block content %}{% endblock %}
   </body>
