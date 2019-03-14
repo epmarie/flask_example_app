@@ -2,6 +2,7 @@ from flask import render_template
 from app import app
 from bokeh.embed import components
 from bokeh_vbar import create_bar_chart
+from bokeh_calendar import create_calendar
 
 @app.route("/")
 @app.route("/home")
@@ -23,11 +24,13 @@ def graphics(days):
     days = 13 if days < 1 else days
     plot = create_bar_chart(days=days)
     script, div = components(plot)
-    data = {"title":"Graphics", "heading":"Chart", "days":days, "div":div, "script":script}
+    heading = f'Bokeh Chart Using {days} Days'
+    data = {"title":"Graphics", "heading":heading, "days":days, "div":div, "script":script}
     return render_template("graphics.html", data=data)
 
-# todo:
-# add url param display bokeh chart
-# graphic / page for python anywhere
-# make PA account
-# updating site once deployed
+@app.route("/calendar")
+def calendar():
+    cal = create_calendar()
+    script, div = components(cal)
+    data = {"title":"Graphics", "heading":"Bokeh Calendar", "div":div, "script":script}
+    return render_template("graphics.html", data=data)

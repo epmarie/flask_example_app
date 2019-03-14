@@ -5,7 +5,7 @@
 <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.13.0.min.js"></script>
 {% extends 'base.html' %}
 {% block content %}
-	<h1>Bokeh VBar Chart using {{ data.days }} Days</h1>
+	<h1>{{ data.heading }}</h1>
     {{ data.div|safe }}
     {{ data.script|safe }}
 {% endblock %}

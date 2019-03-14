@@ -1,5 +1,5 @@
 # Building a Web App with Flask
-Flask is a microframework packed with tools to help build simple, quick web applications. We'll also be using Jinja2, a template engine, to create the bulk of the html content for our application. This tutorial will be split into two parts: creating the application and deploying it. We'll alternate between using the command line, editing code in a text editor (VSCode and Sublime are great options), and interacting with our application in a web browser (Chrome).
+Flask is a microframework packed with tools to help build simple, quick web applications. We'll also be using Jinja2, a template engine, to create the bulk of the html content for our application. This tutorial will cover creating a site, deploying it, and adding interactive Bokeh graphics. We'll alternate between using the command line, editing code in a text editor (VSCode and Sublime are great options), and interacting with our application in a web browser (Chrome).
 
 ## Installating Packages
 Luckily, Flask comes prepackaged with Jinja2, so we only have one bulk-package to install. Install Flask via the command line:
@@ -40,7 +40,7 @@ Okay, the basics of our package are set! Now, back to our actual _application_. 
 $ cd ..
 $ touch flask_app.py
 ```
-Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `export FLASK_ENV=development` (if using windows, use `set` instead of `export`). Now, jump back over to your terminal and run `export FLASK_APP=flask_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
+Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `export FLASK_ENV=development`. Now, jump back over to your terminal and run `export FLASK_APP=my_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
 ```
 [* Serving Flask app "app" (lazy loading)
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)]( * Serving Flask app "flask_app.py" (lazy loading)
@@ -123,7 +123,7 @@ Templates allow us to write HTML and use specific placeholders for certain data.
         <h1>{{ data.heading }}</h1>
         <ul>
         {% for pub in data.pubs %}
-            <li><a href="{{ pub.link }}">{{ pub.title }}</a></li>
+            <li><a href=pub.link>{{ pub.title }}</a></li>
         {% endfor %}
         </ul>
     </body>
@@ -137,7 +137,7 @@ def workshop():
     pubs = [{"title":"NLP", "link":"https://github.com/epmarie/IntroNLP"},
             {"title":"Network Analysis", "link":"https://github.com/epmarie/network_workshop"},
             {"title":"Flask", "link":"https://github.com/epmarie/flask_example_app"}]
-    data = {"title": "workshop", "heading": "Latest Workshops", "pubs": pubs}
+    data = {"title": "workshop", "heading": "Latest Workshops", pubs:pubs}
     return render_template('workshop.html', data=data)
 )
 ```
@@ -156,7 +156,7 @@ Most websites have some sort of navigation bar and/or header at the top of every
     {% endif %}
   </head>
   <body>
-    <div>My App: <a href="/home">Home</a> <a href="/workshop">workshop</a></div>
+    <div>My App: <a href="/home">Home</a><a href="/workshop">workshop</a></div>
     <hr>
     {% block content %}{% endblock %}
   </body>
@@ -180,8 +180,21 @@ By doing this, we're telling our workshop page to _extend_ our base file. Now, i
 ### Exercise: Home Page
 Now that you have some of the basics for creating a template and using template inheritance, create a `home.html` page and use it to extend the `base.html` template and show a page header and a quick welcome/description. Hint: remember to change your function in `routes.py`!
 
+## Deploying to Python Anywhere
+
+We've built a web application, learned how to use templates, and added some interactive graphics. Now it's time to deploy! We'll be using Python Anywhere, but there are many options (AWS, Heroku, etc.) to host your site. Navigate to <http://www.pythonanywhere.com/login> to log in (or create an account, if needed).
+
+On the homepage, navigate to the __Web__ tab and select __"Add a new web app"__. We'll use the Flask setup (and we're running Python 3.6). Once the page loads, scroll down to the __Code__ section and select "Go to directory" for the _working directory_ - we'll come back to edit some of this information later.
+
+Since you can only upload files one at a time (unless you're connecting to something like GitHub), we'll zip our entire folder, upload it, and then unzip it. In your console, make sure you're in the directory _above_ `my_app`, then run `zip -r mysite.zip my_app`. Now, upload that zipped file to PythonAnywhere, and then click "Open Bash Console Here" at the top of the page. In _that_ console, run `unzip mysite.zip` (tedious, I know) and all your files should be stored on PythonAnywhere, in `/home/<username>/my_app`.
+
+Click the geometrical python-esq logo in the top left to return to your dashboard, then navigate to your web app page. Scroll to the __Code__ section once again, and click on the __WSGI configuration file__ link. Change:
+`project_home = u'/home/<username>/mysite'` to `project_home = u'/home/<username>/my_app'` (don't forget to save).
+
+Navigate to your web app page once again, reload your site, and then navigate to the url provided (usually <<username>.pythonanywhere.com>). Ta-da! Your site should be up and running, just as it was locally.
+
 ## Adding Interactive Bokeh Graphics
-Since we have our website up and funcitoning, let's take it a step further and add some interactive charts. To keep everything nice and isolated, we'll add a whole new page for this. Start by adding a new route definition:
+Since we have our website up and funcitoning, let's take it a step further and add some interactive charts. To keep everything nice and isolated, we'll add a whole new page for this. Back in VSCode, start by adding a new route definition:
 ```
 @app.route("/vbar", defaults={'days': 13})
 @app.route("/vbar/<int:days>/")
@@ -240,19 +253,8 @@ from bokeh_vbar import create_bar_chart
 ```
 Run your site and navigate to your new page. Try out a few different integer values (and try _not_ passing in a value) to ensure that your function is acting as intended.
 
-### Exercise
-Add your new page to your base template!
+## Exercise: Second Bokeh page
+Now that you see how the first Bokeh graphics page, download `bokeh_calendar.py`. Using the functions we just wrote as an example, create a new route to display this calendar. Use the same graphics template we used before. Don't forget to update `base.html` - you may want to rename things! 
 
-
-## Deploying to Python Anywhere
-
-We've built a web application, learned how to use templates, and added some interactive graphics. Now it's time to deploy! We'll be using Python Anywhere, but there are many options (AWS, Heroku, etc.) to host your site. Navigate to <http://www.pythonanywhere.com/login> to log in (or create an account, if needed).
-
-On the homepage, navigate to the __Web__ tab and select __"Add a new web app"__. We'll use the Flask setup (and we're running Python 3.6). Once the page loads, scroll down to the __Code__ section and select "Go to directory" for the _working directory_ - we'll come back to edit some of this information later.
-
-Since you can only upload files one at a time (unless you're connecting to something like GitHub), we'll zip our entire folder, upload it, and then unzip it. In your console, make sure you're in the directory _above_ `my_app`, then run `zip -r mysite.zip my_app`. Now, upload that zipped file to PythonAnywhere, and then click "Open Bash Console Here" at the top of the page. In _that_ console, run `unzip mysite.zip` (tedious, I know) and all your files should be stored on PythonAnywhere, in `/home/<username>/my_app`.
-
-Click the geometrical python-esq logo in the top left to return to your dashboard, then navigate to your web app page. Scroll to the __Code__ section once again, and click on the __WSGI configuration file__ link. Change:
-`project_home = u'/home/<username>/mysite'` to `project_home = u'/home/<username>/my_app'` (don't forget to save).
-
-Navigate to your web app page once again, reload your site, and then navigate to the url provided (usually <<username>.pythonanywhere.com>). Ta-da! Your site should be up and running, just as it was locally.
+## Exercise: ReDeploy
+Since we've added quite a few new features to our website, it's time to re-deploy. Even though all the changes you made show up when you run your site locally, the PythonAnywhere site has to be updated for those changes to show up. Using what you've learned, update your site! (Hint: instead of zipping everything, it might be easier to upload file by file, since you'll only need to upload what you've added or changed)
