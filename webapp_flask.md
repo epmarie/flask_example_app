@@ -40,7 +40,7 @@ Okay, the basics of our package are set! Now, back to our actual _application_. 
 $ cd ..
 $ touch flask_app.py
 ```
-Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `export FLASK_ENV=development`. Now, jump back over to your terminal and run `export FLASK_APP=my_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
+Open that new file, add the line `from app import app`, and ta-da: your app is ready to go! Since we'll be running it locally, we'll want to run our application in __debug (development)__ mode. Tell Flask to run your application in a development environment by running `export FLASK_ENV=development` in your terminal. Now run `export FLASK_APP=flask_app.py` to tell Flask how to import your application. Then, run `flask run` - you should see something like this:
 ```
 [* Serving Flask app "app" (lazy loading)
  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)]( * Serving Flask app "flask_app.py" (lazy loading)
@@ -123,7 +123,7 @@ Templates allow us to write HTML and use specific placeholders for certain data.
         <h1>{{ data.heading }}</h1>
         <ul>
         {% for pub in data.pubs %}
-            <li><a href=pub.link>{{ pub.title }}</a></li>
+            <li><a href="{{pub.link}}">{{ pub.title }}</a></li>
         {% endfor %}
         </ul>
     </body>
@@ -137,9 +137,8 @@ def workshop():
     pubs = [{"title":"NLP", "link":"https://github.com/epmarie/IntroNLP"},
             {"title":"Network Analysis", "link":"https://github.com/epmarie/network_workshop"},
             {"title":"Flask", "link":"https://github.com/epmarie/flask_example_app"}]
-    data = {"title": "workshop", "heading": "Latest Workshops", pubs:pubs}
+    data = {"title": "workshop", "heading": "Latest Workshops", "pubs":pubs}
     return render_template('workshop.html', data=data)
-)
 ```
 Try re-running your site now - see how each Workshop is its own element in the list? Jinja took the data we provided and inserted it into the template we created.
 
@@ -184,14 +183,13 @@ Now that you have some of the basics for creating a template and using template 
 
 We've built a web application, learned how to use templates, and added some interactive graphics. Now it's time to deploy! We'll be using Python Anywhere, but there are many options (AWS, Heroku, etc.) to host your site. Navigate to <http://www.pythonanywhere.com/login> to log in (or create an account, if needed).
 
-On the homepage, navigate to the __Web__ tab and select __"Add a new web app"__. We'll use the Flask setup (and we're running Python 3.6). Once the page loads, scroll down to the __Code__ section and select "Go to directory" for the _working directory_ - we'll come back to edit some of this information later.
+On the homepage, navigate to the __Web__ tab and select __"Add a new web app"__. We'll use the Flask setup (and we're running Python 3.6). Once the page loads, scroll down to the __Code__ section and select "Go to directory" for the _source directory_ - we'll come back to add files later.
 
-Since you can only upload files one at a time (unless you're connecting to something like GitHub), we'll zip our entire folder, upload it, and then unzip it. In your console, make sure you're in the directory _above_ `my_app`, then run `zip -r mysite.zip my_app`. Now, upload that zipped file to PythonAnywhere, and then click "Open Bash Console Here" at the top of the page. In _that_ console, run `unzip mysite.zip` (tedious, I know) and all your files should be stored on PythonAnywhere, in `/home/<username>/my_app`.
-
-Click the geometrical python-esq logo in the top left to return to your dashboard, then navigate to your web app page. Scroll to the __Code__ section once again, and click on the __WSGI configuration file__ link. Change:
-`project_home = u'/home/<username>/mysite'` to `project_home = u'/home/<username>/my_app'` (don't forget to save).
+Since you can only upload files one at a time (unless you're connecting to something like GitHub), we'll zip our entire folder, upload it, and then unzip it. In your Windows file manager, make sure you're in the `my_app` directory, then right-click `flask_app.py` and `app` and select "send to zipped folder" (named `mysite.zip`). Now, upload that zipped file to PythonAnywhere, and then click "Open Bash Console Here" at the top of the page. In _that_ console, run `unzip mysite.zip` (tedious, I know) and all your files should be stored on PythonAnywhere.
 
 Navigate to your web app page once again, reload your site, and then navigate to the url provided (usually <<username>.pythonanywhere.com>). Ta-da! Your site should be up and running, just as it was locally.
+	
+For further reference on deployment options with flask, visit <http://flask.pocoo.org/docs/1.0/deploying/>.
 
 ## Adding Interactive Bokeh Graphics
 Since we have our website up and funcitoning, let's take it a step further and add some interactive charts. To keep everything nice and isolated, we'll add a whole new page for this. Back in VSCode, start by adding a new route definition:
@@ -226,7 +224,7 @@ def graphics(days):
     data = {"title":"Graphics", "heading":"Chart", "days":days, "div":div, "script":script}
     return render_template("graphics.html", data=data)
 ```
-Depending on your text editor, you may see errors pop up regarding the `create_bar_chart()` and `components()` functions. Before we can use these functions, we must import them. `Components` comes directly from Bokeh, but `create_bar_chart` is something we (Alex) created. #TODO: download the file, or copy and paste. Who knows?
+Depending on your text editor, you may see errors pop up regarding the `create_bar_chart()` and `components()` functions. Before we can use these functions, we must import them. `Components` comes directly from Bokeh, but `create_bar_chart` is something we (Alex) created. Copy and paste the file information into a new file (make sure it's in the `my_app` folder).
 
 #### Check point
 Before continuing, make sure that your directory has the following structure:
